@@ -44,6 +44,7 @@ class mainWindow(qwid.QMainWindow):
 
         self.fillProgTab()
         self.fillDomainTab()
+        self.fillSolverTab()
         self.fillMGTab()
 
         # Generate button - to generate the YAML
@@ -183,6 +184,83 @@ class mainWindow(qwid.QMainWindow):
         vbLayout.addLayout(ompLayout)
 
         self.tabDomain.setLayout(vbLayout)
+
+
+    # This function fills the widgets in the Solver tab
+    def fillSolverTab(self):
+        ########### HBox Layout for Differentiation Order ###########
+        ordLayout = qwid.QHBoxLayout()
+        ordLayout.setContentsMargins(10,10,10,10)
+        ordLayout.setSpacing(12)
+
+        ordLayout.addWidget(qwid.QLabel("Order of Differentiation", self.tabSolver), 1)
+        ordRButLayout = qwid.QVBoxLayout()
+        ordRButGroup = qwid.QButtonGroup(self)
+
+        ord2ndRadBut = qwid.QRadioButton("2nd Order", self.tabSolver)
+        ord4thRadBut = qwid.QRadioButton("4th Order", self.tabSolver)
+
+        ordRButGroup.addButton(ord2ndRadBut)
+        ordRButLayout.addWidget(ord2ndRadBut, 1)
+
+        ordRButGroup.addButton(ord4thRadBut)
+        ordRButLayout.addWidget(ord4thRadBut, 1)
+
+        ordLayout.addLayout(ordRButLayout, 1)
+
+        ########### HBox Layout for Integration Scheme ###########
+        intLayout = qwid.QHBoxLayout()
+        intLayout.setContentsMargins(10,10,10,10)
+        intLayout.setSpacing(12)
+
+        intLayout.addWidget(qwid.QLabel("Integration Scheme", self.tabSolver), 1)
+        intRButLayout = qwid.QVBoxLayout()
+        intRButGroup = qwid.QButtonGroup(self)
+
+        intCNRadBut = qwid.QRadioButton("Euler-Crank-Nicholson", self.tabSolver)
+        intRKRadBut = qwid.QRadioButton("Low-Storage Runge-Kutta", self.tabSolver)
+
+        intRButGroup.addButton(intCNRadBut)
+        intRButLayout.addWidget(intCNRadBut, 1)
+
+        intRButGroup.addButton(intRKRadBut)
+        intRButLayout.addWidget(intRKRadBut, 1)
+
+        intLayout.addLayout(intRButLayout, 1)
+
+        ########### HBox Layout for Non-Linear Term ###########
+        nltLayout = qwid.QHBoxLayout()
+        nltLayout.setContentsMargins(10,10,10,10)
+        nltLayout.setSpacing(12)
+
+        nltLayout.addWidget(qwid.QLabel("Non-Linear Term", self.tabSolver), 1)
+        nltRButLayout = qwid.QVBoxLayout()
+        nltRButGroup = qwid.QButtonGroup(self)
+
+        nltCDiffRadBut = qwid.QRadioButton("Central Difference", self.tabSolver)
+        nltHUpwdRadBut = qwid.QRadioButton("Hybrid Upwinding", self.tabSolver)
+        nltMorinRadBut = qwid.QRadioButton("Morinishi Scheme", self.tabSolver)
+
+        nltRButGroup.addButton(nltCDiffRadBut)
+        nltRButLayout.addWidget(nltCDiffRadBut, 1)
+
+        nltRButGroup.addButton(nltHUpwdRadBut)
+        nltRButLayout.addWidget(nltHUpwdRadBut, 1)
+
+        nltRButGroup.addButton(nltMorinRadBut)
+        nltRButLayout.addWidget(nltMorinRadBut, 1)
+
+        nltLayout.addLayout(nltRButLayout, 1)
+
+        vbLayout = qwid.QVBoxLayout()
+        vbLayout.setContentsMargins(15,22,15,250)
+        vbLayout.setSpacing(15)
+
+        vbLayout.addLayout(ordLayout)
+        vbLayout.addLayout(intLayout)
+        vbLayout.addLayout(nltLayout)
+
+        self.tabSolver.setLayout(vbLayout)
 
 
     # This function fills the widgets in the Multigrid tab
