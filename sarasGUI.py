@@ -33,16 +33,17 @@ class mainWindow(qwid.QMainWindow):
 
         # Four widgets for four tabs
         self.tabProg = qwid.QWidget()
-        self.tabMesh = qwid.QWidget()
+        self.tabDomain = qwid.QWidget()
         self.tabSolver = qwid.QWidget()
         self.tabMG = qwid.QWidget()
 
         self.tabs.addTab(self.tabProg, "Program")
-        self.tabs.addTab(self.tabMesh, "Mesh")
+        self.tabs.addTab(self.tabDomain, "Domain")
         self.tabs.addTab(self.tabSolver, "Solver")
         self.tabs.addTab(self.tabMG, "Multigrid")
 
         self.fillProgTab()
+        self.fillDomainTab()
         self.fillMGTab()
 
         ''' 
@@ -119,6 +120,96 @@ class mainWindow(qwid.QMainWindow):
             self.gsCBox.addItem(str(n))
         self.gsCBox.currentIndexChanged.connect(self.gsCBoxSelection)
         self.gsCBox.move(295, 25)
+
+
+    # This function fills the widgets in the Domain tab
+    def fillDomainTab(self):
+        ########### Grid Layout for first three Spin Boxes ###########
+        gLayout = qwid.QGridLayout()
+        gLayout.setColumnStretch(0, 1)
+        gLayout.setColumnStretch(1, 3)
+        gLayout.setColumnStretch(2, 3)
+        gLayout.setColumnStretch(3, 2)
+        gLayout.setColumnStretch(4, 2)
+        gLayout.setColumnStretch(5, 2)
+        gLayout.setColumnStretch(6, 2)
+
+        gLayout.setRowStretch(0, 1)
+        gLayout.setRowStretch(1, 1)
+        gLayout.setRowStretch(2, 1)
+        gLayout.setRowStretch(3, 1)
+
+        gLayout.addWidget(qwid.QLabel("X", self.tabDomain), 1, 0)
+        gLayout.addWidget(qwid.QLabel("Y", self.tabDomain), 2, 0)
+        gLayout.addWidget(qwid.QLabel("Z", self.tabDomain), 3, 0)
+
+        gLayout.addWidget(qwid.QLabel("Length", self.tabDomain), 0, 1)
+        self.xLenLEdit = qwid.QLineEdit("1.0", self.tabDomain)
+        self.yLenLEdit = qwid.QLineEdit("1.0", self.tabDomain)
+        self.zLenLEdit = qwid.QLineEdit("1.0", self.tabDomain)
+        gLayout.addWidget(self.xLenLEdit, 1, 1)
+        gLayout.addWidget(self.yLenLEdit, 2, 1)
+        gLayout.addWidget(self.zLenLEdit, 3, 1)
+
+        gLayout.addWidget(qwid.QLabel("Points", self.tabDomain), 0, 2)
+        self.xPtsSBox = qwid.QSpinBox(self.tabDomain)
+        self.yPtsSBox = qwid.QSpinBox(self.tabDomain)
+        self.zPtsSBox = qwid.QSpinBox(self.tabDomain)
+        self.xPtsSBox.setMinimum(2);    self.xPtsSBox.setMaximum(16384)
+        self.yPtsSBox.setMinimum(2);    self.yPtsSBox.setMaximum(16384)
+        self.zPtsSBox.setMinimum(2);    self.zPtsSBox.setMaximum(16384)
+        gLayout.addWidget(self.xPtsSBox, 1, 2)
+        gLayout.addWidget(self.yPtsSBox, 2, 2)
+        gLayout.addWidget(self.zPtsSBox, 3, 2)
+
+        gLayout.addWidget(qwid.QLabel("Periodic", self.tabDomain), 0, 3)
+        self.xPerChBox = qwid.QCheckBox(self.tabDomain)
+        self.yPerChBox = qwid.QCheckBox(self.tabDomain)
+        self.zPerChBox = qwid.QCheckBox(self.tabDomain)
+        self.xPerChBox.setStyleSheet("margin-left:15%; margin-right:5%;")
+        self.yPerChBox.setStyleSheet("margin-left:15%; margin-right:5%;")
+        self.zPerChBox.setStyleSheet("margin-left:15%; margin-right:5%;")
+        gLayout.addWidget(self.xPerChBox, 1, 3)
+        gLayout.addWidget(self.yPerChBox, 2, 3)
+        gLayout.addWidget(self.zPerChBox, 3, 3)
+
+        gLayout.addWidget(qwid.QLabel("Uniform", self.tabDomain), 0, 4)
+        self.xUnifChBox = qwid.QCheckBox(self.tabDomain)
+        self.yUnifChBox = qwid.QCheckBox(self.tabDomain)
+        self.zUnifChBox = qwid.QCheckBox(self.tabDomain)
+        self.xUnifChBox.setStyleSheet("margin-left:15%; margin-right:5%;")
+        self.yUnifChBox.setStyleSheet("margin-left:15%; margin-right:5%;")
+        self.zUnifChBox.setStyleSheet("margin-left:15%; margin-right:5%;")
+        gLayout.addWidget(self.xUnifChBox, 1, 4)
+        gLayout.addWidget(self.yUnifChBox, 2, 4)
+        gLayout.addWidget(self.zUnifChBox, 3, 4)
+
+        gLayout.addWidget(qwid.QLabel("Beta", self.tabDomain), 0, 5)
+        self.xBetaLEdit = qwid.QLineEdit("1.0", self.tabDomain)
+        self.yBetaLEdit = qwid.QLineEdit("1.0", self.tabDomain)
+        self.zBetaLEdit = qwid.QLineEdit("1.0", self.tabDomain)
+        gLayout.addWidget(self.xBetaLEdit, 1, 5)
+        gLayout.addWidget(self.yBetaLEdit, 2, 5)
+        gLayout.addWidget(self.zBetaLEdit, 3, 5)
+
+        gLayout.addWidget(qwid.QLabel("Processors", self.tabDomain), 0, 6)
+        self.xProcsSBox = qwid.QSpinBox(self.tabDomain)
+        self.yProcsSBox = qwid.QSpinBox(self.tabDomain)
+        self.zProcsSBox = qwid.QSpinBox(self.tabDomain)
+        self.xProcsSBox.setMinimum(1);    self.xProcsSBox.setMaximum(2048)
+        self.yProcsSBox.setMinimum(1);    self.yProcsSBox.setMaximum(2048)
+        self.zProcsSBox.setMinimum(1);    self.zProcsSBox.setMaximum(2048)
+        gLayout.addWidget(self.xProcsSBox, 1, 6)
+        gLayout.addWidget(self.yProcsSBox, 2, 6)
+        gLayout.addWidget(self.zProcsSBox, 3, 6)
+
+        vbLayout = qwid.QVBoxLayout()
+        vbLayout.setContentsMargins(15,22,15,410)
+        vbLayout.setSpacing(15)
+
+        vbLayout.addLayout(gLayout)
+
+        self.tabDomain.setLayout(vbLayout)
 
 
     # This function fills the widgets in the Multigrid tab
