@@ -46,48 +46,8 @@ class mainWindow(qwid.QMainWindow):
         self.fillDomainTab()
         self.fillMGTab()
 
-        ''' 
-
-        # A Frame widget containing widgets to enable or disable non-uniform grid
-        nuFrame = qwid.QFrame(self)
-        nuFrame.setFrameStyle(qwid.QFrame.StyledPanel)
-        nuFrame.resize(375, 46)
-        nuFrame.move(25, 322)
-
-        # Check box to enable non-uniform grid
-        self.nugChBox = qwid.QCheckBox("Enable non-uniform grid", self)
-        self.nugChBox.setToolTip("<p>Use a tangent-hyperbolic grid which is fine near the boundaries and coarse at the center of the domain<\p>")
-        self.nugChBox.resize(self.nugChBox.sizeHint())
-        self.nugChBox.move(40, 335)
-        self.nugChBox.stateChanged.connect(self.nuGridCheck)
-
-        # Widgets to get the tangent-hyperbolic grid stretching factor, beta
-        self.betLabel = qwid.QLabel("Beta", self)
-        self.betLabel.setToolTip("<nobr>Stretching parameter for <\nobr>tangent-hyperbolic grid")
-        self.betLabel.resize(self.betLabel.sizeHint())
-        self.betLabel.setEnabled(False)
-        self.betLabel.move(275, 337)
-
-        self.betLEdit = qwid.QLineEdit("0.5", self)
-        self.betLEdit.setToolTip("<p>Must be a floating point number greater than 0, but not greater than 3<\p>")
-        self.betLEdit.setAlignment(qcore.Qt.AlignRight)
-        self.betLEdit.setEnabled(False)
-        self.betLEdit.resize(70, 30)
-        self.betLEdit.move(322, 330)
-
-        # A few check boxes to decide what should be plotted
-        self.solChBox = qwid.QCheckBox("Plot computed and analytical solution", self)
-        self.solChBox.resize(self.solChBox.sizeHint())
-        self.solChBox.move(30, 382)
-
-        self.errChBox = qwid.QCheckBox("Plot error in computed solution", self)
-        self.errChBox.resize(self.errChBox.sizeHint())
-        self.errChBox.move(30, 412)
-
-        ''' 
-
-        # Start button - to start the simulation :)
-        startButton = qwid.QPushButton('Start', self)
+        # Generate button - to generate the YAML
+        startButton = qwid.QPushButton('Generate', self)
         startButton.clicked.connect(self.startSolver)
         startButton.resize(startButton.sizeHint())
         startButton.move(350, 610)
@@ -203,11 +163,24 @@ class mainWindow(qwid.QMainWindow):
         gLayout.addWidget(self.yProcsSBox, 2, 6)
         gLayout.addWidget(self.zProcsSBox, 3, 6)
 
+        ########### HBox Layout for OpenMP Threads ###########
+        ompLayout = qwid.QHBoxLayout()
+        ompLayout.setContentsMargins(15,18,15,18)
+
+        # Widgets to set Successive Over Relaxation parameter
+        ompLayout.addWidget(qwid.QLabel("Number of OpenMP Threads", self.tabDomain), 3)
+
+        self.openMPSBox = qwid.QSpinBox(self.tabDomain)
+        self.openMPSBox.setAlignment(qcore.Qt.AlignRight)
+        self.openMPSBox.setMinimum(1);    self.openMPSBox.setMaximum(128)
+        ompLayout.addWidget(self.openMPSBox, 1)
+
         vbLayout = qwid.QVBoxLayout()
-        vbLayout.setContentsMargins(15,22,15,410)
+        vbLayout.setContentsMargins(15,22,15,340)
         vbLayout.setSpacing(15)
 
         vbLayout.addLayout(gLayout)
+        vbLayout.addLayout(ompLayout)
 
         self.tabDomain.setLayout(vbLayout)
 
