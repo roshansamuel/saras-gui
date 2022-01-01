@@ -69,10 +69,30 @@ class mainWindow(qwid.QMainWindow):
 
     # This function fills the widgets in the Program tab
     def fillProgTab(self):
-        ########### Grid Layout for first three Spin Boxes ###########
+        ########### HBox Layout for Solver Variables ###########
+        pTypLayout = qwid.QHBoxLayout()
+        pTypLayout.setContentsMargins(10,8,10,8)
+        pTypLayout.setSpacing(5)
+
+        pTypLayout.addWidget(qwid.QLabel("Problem Type", self.tabProg), 1)
+        pTypRButGroup = qwid.QButtonGroup(self)
+
+        self.pTypHydRadBut = qwid.QRadioButton("Hydro", self.tabProg)
+        self.pTypTheRadBut = qwid.QRadioButton("Thermal", self.tabProg)
+        self.pTypHydRadBut.setChecked(True)
+
+        pTypRButGroup.addButton(self.pTypHydRadBut)
+        pTypRButGroup.addButton(self.pTypTheRadBut)
+
+        pTypLayout.addStretch(1)
+        pTypLayout.addWidget(self.pTypHydRadBut, 1)
+        pTypLayout.addWidget(self.pTypTheRadBut, 1)
+
+        ########### Grid Layout for five line edits ###########
         gLayout = qwid.QGridLayout()
         gLayout.setColumnStretch(0, 3)
         gLayout.setColumnStretch(1, 1)
+        gLayout.setContentsMargins(10,8,10,8)
 
         # Widgets to get non-dimensional constants
         gLayout.addWidget(qwid.QLabel("Reynolds Number", self.tabProg), 0, 0)
@@ -95,10 +115,12 @@ class mainWindow(qwid.QMainWindow):
         self.taLEdit = qwid.QLineEdit(self.tabProg)
         gLayout.addWidget(self.taLEdit, 4, 1)
 
+        ########### Add everything to the main Layout ###########
         vbLayout = qwid.QVBoxLayout()
         vbLayout.setContentsMargins(15,22,15,150)
         vbLayout.setSpacing(22)
 
+        vbLayout.addLayout(pTypLayout)
         vbLayout.addLayout(gLayout)
 
         self.tabProg.setLayout(vbLayout)
@@ -197,6 +219,7 @@ class mainWindow(qwid.QMainWindow):
         self.openMPSBox.setMinimum(1);    self.openMPSBox.setMaximum(128)
         ompLayout.addWidget(self.openMPSBox, 1)
 
+        ########### Add everything to the main Layout ###########
         vbLayout = qwid.QVBoxLayout()
         vbLayout.setContentsMargins(15,22,15,340)
         vbLayout.setSpacing(15)
@@ -211,8 +234,8 @@ class mainWindow(qwid.QMainWindow):
     def fillSolverTab(self):
         ########### HBox Layout for Differentiation Order ###########
         ordLayout = qwid.QHBoxLayout()
-        ordLayout.setContentsMargins(10,8,10,8)
-        ordLayout.setSpacing(5)
+        ordLayout.setContentsMargins(10,5,10,5)
+        ordLayout.setSpacing(3)
 
         ordLayout.addWidget(qwid.QLabel("Order of Differentiation", self.tabSolver), 1)
         ordRButLayout = qwid.QVBoxLayout()
@@ -220,6 +243,7 @@ class mainWindow(qwid.QMainWindow):
 
         self.ord2ndRadBut = qwid.QRadioButton("2nd Order", self.tabSolver)
         self.ord4thRadBut = qwid.QRadioButton("4th Order", self.tabSolver)
+        self.ord2ndRadBut.setChecked(True)
 
         ordRButGroup.addButton(self.ord2ndRadBut)
         ordRButLayout.addWidget(self.ord2ndRadBut, 1)
@@ -231,8 +255,8 @@ class mainWindow(qwid.QMainWindow):
 
         ########### HBox Layout for Integration Scheme ###########
         intLayout = qwid.QHBoxLayout()
-        intLayout.setContentsMargins(10,8,10,8)
-        intLayout.setSpacing(5)
+        intLayout.setContentsMargins(10,5,10,5)
+        intLayout.setSpacing(3)
 
         intLayout.addWidget(qwid.QLabel("Integration Scheme", self.tabSolver), 1)
         intRButLayout = qwid.QVBoxLayout()
@@ -240,6 +264,7 @@ class mainWindow(qwid.QMainWindow):
 
         self.intCNRadBut = qwid.QRadioButton("Euler-Crank-Nicholson", self.tabSolver)
         self.intRKRadBut = qwid.QRadioButton("Low-Storage Runge-Kutta", self.tabSolver)
+        self.intCNRadBut.setChecked(True)
 
         intRButGroup.addButton(self.intCNRadBut)
         intRButLayout.addWidget(self.intCNRadBut, 1)
@@ -251,8 +276,8 @@ class mainWindow(qwid.QMainWindow):
 
         ########### HBox Layout for Non-Linear Term ###########
         nltLayout = qwid.QHBoxLayout()
-        nltLayout.setContentsMargins(10,8,10,8)
-        nltLayout.setSpacing(5)
+        nltLayout.setContentsMargins(10,5,10,5)
+        nltLayout.setSpacing(3)
 
         nltLayout.addWidget(qwid.QLabel("Non-Linear Term", self.tabSolver), 1)
         nltRButLayout = qwid.QVBoxLayout()
@@ -261,6 +286,7 @@ class mainWindow(qwid.QMainWindow):
         self.nltCDiffRadBut = qwid.QRadioButton("Central Difference", self.tabSolver)
         self.nltHUpwdRadBut = qwid.QRadioButton("Hybrid Upwinding", self.tabSolver)
         self.nltMorinRadBut = qwid.QRadioButton("Morinishi Scheme", self.tabSolver)
+        self.nltCDiffRadBut.setChecked(True)
 
         self.nltHUpwdRadBut.toggled.connect(self.upwindCheck)
 
@@ -332,9 +358,86 @@ class mainWindow(qwid.QMainWindow):
         self.cflLEdit.setEnabled(False)
         cflLayout.addWidget(self.cflLEdit, 1)
 
+        ########### HBox Layout for Time-Step Details ###########
+        tStpLayout = qwid.QHBoxLayout()
+        tStpLayout.setContentsMargins(10,10,10,5)
+
+        tStpLayout.addWidget(qwid.QLabel("Time-Step", self.tabSolver), 1)
+        self.tStpLEdit = qwid.QLineEdit("1e-3", self.tabSolver)
+        tStpLayout.addWidget(self.tStpLEdit, 1)
+
+        tStpLayout.addStretch(1)
+
+        tStpLayout.addWidget(qwid.QLabel("Final Time", self.tabSolver), 1)
+        self.tMaxLEdit = qwid.QLineEdit("10.0", self.tabSolver)
+        tStpLayout.addWidget(self.tMaxLEdit, 1)
+
+        tStpLayout.addStretch(1)
+
+        tStpLayout.addWidget(qwid.QLabel("I/O Count", self.tabSolver), 1)
+        self.iCntSBox = qwid.QSpinBox(self.tabSolver)
+        self.iCntSBox.setMinimum(1)
+        tStpLayout.addWidget(self.iCntSBox, 1)
+
+        ########### HBox Layout for File I/O Intervals ###########
+        fIOLayout = qwid.QHBoxLayout()
+        fIOLayout.setContentsMargins(10,10,10,5)
+
+        fIOLayout.addWidget(qwid.QLabel("Solution Write Interval", self.tabSolver), 1)
+        self.swIntLEdit = qwid.QLineEdit("1e-3", self.tabSolver)
+        fIOLayout.addWidget(self.swIntLEdit, 1)
+
+        fIOLayout.addStretch(1)
+
+        fIOLayout.addWidget(qwid.QLabel("Restart Write Interval", self.tabSolver), 1)
+        self.rwIntLEdit = qwid.QLineEdit("1e-3", self.tabSolver)
+        fIOLayout.addWidget(self.rwIntLEdit, 1)
+
+        ########### HBox Layout for Solution Format ###########
+        fFormLayout = qwid.QHBoxLayout()
+        fFormLayout.setContentsMargins(10,10,10,5)
+
+        fFormLayout.addWidget(qwid.QLabel("Solution Format", self.tabSolver), 1)
+        fFormRButGroup = qwid.QButtonGroup(self)
+
+        self.fSarRadBut = qwid.QRadioButton("SARAS", self.tabSolver)
+        self.fTarRadBut = qwid.QRadioButton("TARANG", self.tabSolver)
+        self.fSarRadBut.setChecked(True)
+
+        fFormRButGroup.addButton(self.fSarRadBut)
+        fFormRButGroup.addButton(self.fTarRadBut)
+
+        fFormLayout.addStretch(1)
+        fFormLayout.addWidget(self.fSarRadBut, 1)
+        fFormLayout.addWidget(self.fTarRadBut, 1)
+
+        ########### HBox Layout for Probe Details ###########
+        probeLayout = qwid.QHBoxLayout()
+        probeLayout.setContentsMargins(10,5,10,5)
+
+        # A Frame widget containing widgets to enable or disable probes
+        probeFrame = qwid.QFrame(self.tabSolver)
+        probeFrame.setFrameStyle(qwid.QFrame.StyledPanel)
+        probeFrame.setLayout(probeLayout)
+
+        # Check box to enable probes
+        self.probeCondChBox = qwid.QCheckBox("Record Probes", self.tabSolver)
+        probeLayout.addWidget(self.probeCondChBox, 3)
+        self.probeCondChBox.stateChanged.connect(self.probeCondCheck)
+
+        # Widgets to get probe interval
+        self.probeLabel = qwid.QLabel("Probe Interval", self.tabSolver)
+        self.probeLabel.setEnabled(False)
+        probeLayout.addWidget(self.probeLabel, 1)
+
+        self.probeLEdit = qwid.QLineEdit("0.5", self.tabSolver)
+        self.probeLEdit.setAlignment(qcore.Qt.AlignRight)
+        self.probeLEdit.setEnabled(False)
+        probeLayout.addWidget(self.probeLEdit, 1)
+
         ########### Add everything to the main Layout ###########
         vbLayout = qwid.QVBoxLayout()
-        vbLayout.setContentsMargins(15,22,15,170)
+        vbLayout.setContentsMargins(15,22,15,15)
         vbLayout.setSpacing(7)
 
         vbLayout.addLayout(ordLayout, 2)
@@ -343,6 +446,10 @@ class mainWindow(qwid.QMainWindow):
         vbLayout.addLayout(upwLayout, 1)
         vbLayout.addLayout(rbgsLayout, 1)
         vbLayout.addWidget(cflFrame, 1)
+        vbLayout.addLayout(tStpLayout, 1)
+        vbLayout.addLayout(fIOLayout, 1)
+        vbLayout.addLayout(fFormLayout, 1)
+        vbLayout.addWidget(probeFrame, 1)
 
         self.tabSolver.setLayout(vbLayout)
 
@@ -425,10 +532,21 @@ class mainWindow(qwid.QMainWindow):
         mgRFrame.setLayout(rLayout)
 
         rTypeLayout = qwid.QHBoxLayout()
+        rTypeRButGroup = qwid.QButtonGroup(self)
+
+        self.rtMaxRadBut = qwid.QRadioButton("Max", self.tabMG)
+        self.rtAvgRadBut = qwid.QRadioButton("Mean", self.tabMG)
+        self.rtRMSRadBut = qwid.QRadioButton("RMS", self.tabMG)
+        self.rtMaxRadBut.setChecked(True)
+
         rTypeLayout.addWidget(qwid.QLabel("Residual Type", self.tabMG), 2)
-        rTypeLayout.addWidget(qwid.QRadioButton("Max", self.tabMG), 1)
-        rTypeLayout.addWidget(qwid.QRadioButton("Mean", self.tabMG), 1)
-        rTypeLayout.addWidget(qwid.QRadioButton("RMS", self.tabMG), 1)
+        rTypeLayout.addWidget(self.rtMaxRadBut, 1)
+        rTypeLayout.addWidget(self.rtAvgRadBut, 1)
+        rTypeLayout.addWidget(self.rtRMSRadBut, 1)
+
+        rTypeRButGroup.addButton(self.rtMaxRadBut)
+        rTypeRButGroup.addButton(self.rtAvgRadBut)
+        rTypeRButGroup.addButton(self.rtRMSRadBut)
 
         rLayout.addLayout(rTypeLayout)
 
@@ -458,12 +576,6 @@ class mainWindow(qwid.QMainWindow):
         self.tabMG.setLayout(vbLayout)
 
 
-    # This function restricts the maximum value of the SpinBox used to set V-Cycle depth.
-    # This maximum value is obtained from the grid-size, passed as an index, i
-    def gsCBoxSelection(self, i):
-        maxDepth = i + 1
-        self.vdSBox.setMaximum(i + 1)
-
     # This function enables or disables the widgets used for fine-tuning
     # upwinding scheme when it is enabled for non-linear term calculations
     def upwindCheck(self):
@@ -477,6 +589,15 @@ class mainWindow(qwid.QMainWindow):
             self.upPeLEdit.setEnabled(False)
             self.upCBLabel.setEnabled(False)
             self.upCBLEdit.setEnabled(False)
+
+    # This function enables or disables the widgets used to get probe details
+    def probeCondCheck(self):
+        if self.probeCondChBox.isChecked() == True:
+            self.probeLabel.setEnabled(True)
+            self.probeLEdit.setEnabled(True)
+        else:
+            self.probeLabel.setEnabled(False)
+            self.probeLEdit.setEnabled(False)
 
     # This function enables or disables the widgets used to get Courant number
     def cflCondCheck(self):
@@ -562,7 +683,6 @@ class consoleWindow(qwid.QMainWindow):
 
         # Plot button
         plotButton = qwid.QPushButton('Plot', self)
-        plotButton.clicked.connect(self.plotSolution)
         plotButton.resize(plotButton.sizeHint())
         plotButton.move(165, 350)
 
@@ -596,19 +716,6 @@ class consoleWindow(qwid.QMainWindow):
     def updateTEdit(self, cOutString):
         self.conTEdit.append(cOutString)
         qwid.QApplication.processEvents()
-
-    # This function is called by the 'Plot' button when clicked.
-    # It merely calls the plotResult() function of the MG solver, with appropriate arguments.
-    def plotSolution(self):
-        pass
-        '''
-        if self.sPlot:
-            mgSolver.plotResult(0)
-        if self.ePlot:
-            mgSolver.plotResult(1)
-        if self.rPlot:
-            mgSolver.plotResult(2)
-        '''
 
 
 ############################## THAT'S IT, FOLKS!! ###############################
