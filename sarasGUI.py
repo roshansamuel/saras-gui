@@ -69,18 +69,39 @@ class mainWindow(qwid.QMainWindow):
 
     # This function fills the widgets in the Program tab
     def fillProgTab(self):
-        # Widgets to get grid size
-        gsLabel = qwid.QLabel("Number of points in the domain", self.tabProg)
-        gsLabel.resize(gsLabel.sizeHint())
-        gsLabel.move(32, 32)
+        ########### Grid Layout for first three Spin Boxes ###########
+        gLayout = qwid.QGridLayout()
+        gLayout.setColumnStretch(0, 3)
+        gLayout.setColumnStretch(1, 1)
 
-        self.gsCBox = qwid.QComboBox(self.tabProg)
-        self.gsCBox.setToolTip("<p>Grid should have 2^n + 1 points to enable restriction and prolongation during V-Cycles<\p>")
-        for i in range(2, 15):
-            n = 2**i + 1
-            self.gsCBox.addItem(str(n))
-        self.gsCBox.currentIndexChanged.connect(self.gsCBoxSelection)
-        self.gsCBox.move(295, 25)
+        # Widgets to get non-dimensional constants
+        gLayout.addWidget(qwid.QLabel("Reynolds Number", self.tabProg), 0, 0)
+        self.reLEdit = qwid.QLineEdit(self.tabProg)
+        gLayout.addWidget(self.reLEdit, 0, 1)
+
+        gLayout.addWidget(qwid.QLabel("Rayleigh Number", self.tabProg), 1, 0)
+        self.raLEdit = qwid.QLineEdit(self.tabProg)
+        gLayout.addWidget(self.raLEdit, 1, 1)
+
+        gLayout.addWidget(qwid.QLabel("Prandtl Number", self.tabProg), 2, 0)
+        self.prLEdit = qwid.QLineEdit(self.tabProg)
+        gLayout.addWidget(self.prLEdit, 2, 1)
+
+        gLayout.addWidget(qwid.QLabel("Rossby Number", self.tabProg), 3, 0)
+        self.roLEdit = qwid.QLineEdit(self.tabProg)
+        gLayout.addWidget(self.roLEdit, 3, 1)
+
+        gLayout.addWidget(qwid.QLabel("Taylor Number", self.tabProg), 4, 0)
+        self.taLEdit = qwid.QLineEdit(self.tabProg)
+        gLayout.addWidget(self.taLEdit, 4, 1)
+
+        vbLayout = qwid.QVBoxLayout()
+        vbLayout.setContentsMargins(15,22,15,150)
+        vbLayout.setSpacing(22)
+
+        vbLayout.addLayout(gLayout)
+
+        self.tabProg.setLayout(vbLayout)
 
 
     # This function fills the widgets in the Domain tab
@@ -190,75 +211,138 @@ class mainWindow(qwid.QMainWindow):
     def fillSolverTab(self):
         ########### HBox Layout for Differentiation Order ###########
         ordLayout = qwid.QHBoxLayout()
-        ordLayout.setContentsMargins(10,10,10,10)
-        ordLayout.setSpacing(12)
+        ordLayout.setContentsMargins(10,8,10,8)
+        ordLayout.setSpacing(5)
 
         ordLayout.addWidget(qwid.QLabel("Order of Differentiation", self.tabSolver), 1)
         ordRButLayout = qwid.QVBoxLayout()
         ordRButGroup = qwid.QButtonGroup(self)
 
-        ord2ndRadBut = qwid.QRadioButton("2nd Order", self.tabSolver)
-        ord4thRadBut = qwid.QRadioButton("4th Order", self.tabSolver)
+        self.ord2ndRadBut = qwid.QRadioButton("2nd Order", self.tabSolver)
+        self.ord4thRadBut = qwid.QRadioButton("4th Order", self.tabSolver)
 
-        ordRButGroup.addButton(ord2ndRadBut)
-        ordRButLayout.addWidget(ord2ndRadBut, 1)
+        ordRButGroup.addButton(self.ord2ndRadBut)
+        ordRButLayout.addWidget(self.ord2ndRadBut, 1)
 
-        ordRButGroup.addButton(ord4thRadBut)
-        ordRButLayout.addWidget(ord4thRadBut, 1)
+        ordRButGroup.addButton(self.ord4thRadBut)
+        ordRButLayout.addWidget(self.ord4thRadBut, 1)
 
         ordLayout.addLayout(ordRButLayout, 1)
 
         ########### HBox Layout for Integration Scheme ###########
         intLayout = qwid.QHBoxLayout()
-        intLayout.setContentsMargins(10,10,10,10)
-        intLayout.setSpacing(12)
+        intLayout.setContentsMargins(10,8,10,8)
+        intLayout.setSpacing(5)
 
         intLayout.addWidget(qwid.QLabel("Integration Scheme", self.tabSolver), 1)
         intRButLayout = qwid.QVBoxLayout()
         intRButGroup = qwid.QButtonGroup(self)
 
-        intCNRadBut = qwid.QRadioButton("Euler-Crank-Nicholson", self.tabSolver)
-        intRKRadBut = qwid.QRadioButton("Low-Storage Runge-Kutta", self.tabSolver)
+        self.intCNRadBut = qwid.QRadioButton("Euler-Crank-Nicholson", self.tabSolver)
+        self.intRKRadBut = qwid.QRadioButton("Low-Storage Runge-Kutta", self.tabSolver)
 
-        intRButGroup.addButton(intCNRadBut)
-        intRButLayout.addWidget(intCNRadBut, 1)
+        intRButGroup.addButton(self.intCNRadBut)
+        intRButLayout.addWidget(self.intCNRadBut, 1)
 
-        intRButGroup.addButton(intRKRadBut)
-        intRButLayout.addWidget(intRKRadBut, 1)
+        intRButGroup.addButton(self.intRKRadBut)
+        intRButLayout.addWidget(self.intRKRadBut, 1)
 
         intLayout.addLayout(intRButLayout, 1)
 
         ########### HBox Layout for Non-Linear Term ###########
         nltLayout = qwid.QHBoxLayout()
-        nltLayout.setContentsMargins(10,10,10,10)
-        nltLayout.setSpacing(12)
+        nltLayout.setContentsMargins(10,8,10,8)
+        nltLayout.setSpacing(5)
 
         nltLayout.addWidget(qwid.QLabel("Non-Linear Term", self.tabSolver), 1)
         nltRButLayout = qwid.QVBoxLayout()
         nltRButGroup = qwid.QButtonGroup(self)
 
-        nltCDiffRadBut = qwid.QRadioButton("Central Difference", self.tabSolver)
-        nltHUpwdRadBut = qwid.QRadioButton("Hybrid Upwinding", self.tabSolver)
-        nltMorinRadBut = qwid.QRadioButton("Morinishi Scheme", self.tabSolver)
+        self.nltCDiffRadBut = qwid.QRadioButton("Central Difference", self.tabSolver)
+        self.nltHUpwdRadBut = qwid.QRadioButton("Hybrid Upwinding", self.tabSolver)
+        self.nltMorinRadBut = qwid.QRadioButton("Morinishi Scheme", self.tabSolver)
 
-        nltRButGroup.addButton(nltCDiffRadBut)
-        nltRButLayout.addWidget(nltCDiffRadBut, 1)
+        self.nltHUpwdRadBut.toggled.connect(self.upwindCheck)
 
-        nltRButGroup.addButton(nltHUpwdRadBut)
-        nltRButLayout.addWidget(nltHUpwdRadBut, 1)
+        nltRButGroup.addButton(self.nltCDiffRadBut)
+        nltRButLayout.addWidget(self.nltCDiffRadBut, 1)
 
-        nltRButGroup.addButton(nltMorinRadBut)
-        nltRButLayout.addWidget(nltMorinRadBut, 1)
+        nltRButGroup.addButton(self.nltHUpwdRadBut)
+        nltRButLayout.addWidget(self.nltHUpwdRadBut, 1)
+
+        nltRButGroup.addButton(self.nltMorinRadBut)
+        nltRButLayout.addWidget(self.nltMorinRadBut, 1)
 
         nltLayout.addLayout(nltRButLayout, 1)
 
-        vbLayout = qwid.QVBoxLayout()
-        vbLayout.setContentsMargins(15,22,15,250)
-        vbLayout.setSpacing(15)
+        ########### HBox Layout for Tuning Upwinding ###########
+        upwLayout = qwid.QHBoxLayout()
+        upwLayout.setContentsMargins(10,8,10,8)
 
-        vbLayout.addLayout(ordLayout)
-        vbLayout.addLayout(intLayout)
-        vbLayout.addLayout(nltLayout)
+        self.upPeLabel = qwid.QLabel("Peclet Limit", self.tabSolver)
+        self.upPeLEdit = qwid.QLineEdit("2.0", self.tabSolver)
+        upwLayout.addWidget(self.upPeLabel, 1)
+        upwLayout.addWidget(self.upPeLEdit, 1)
+
+        upwLayout.addStretch(1)
+
+        self.upCBLabel = qwid.QLabel("Central Bias", self.tabSolver)
+        self.upCBLEdit = qwid.QLineEdit("0.8", self.tabSolver)
+        upwLayout.addWidget(self.upCBLabel, 1)
+        upwLayout.addWidget(self.upCBLEdit, 1)
+
+        self.upPeLabel.setEnabled(False)
+        self.upPeLEdit.setEnabled(False)
+        self.upCBLabel.setEnabled(False)
+        self.upCBLEdit.setEnabled(False)
+
+        ########### HBox Layout for Iterative Solver Tolerance ###########
+        rbgsLayout = qwid.QHBoxLayout()
+        rbgsLayout.setContentsMargins(10,8,10,8)
+
+        rbgsLayout.addWidget(qwid.QLabel("Tolerance in iterative solvers of predictors", self.tabSolver), 3)
+
+        self.rbgstLEdit = qwid.QLineEdit("1e-5", self.tabSolver)
+        self.rbgstLEdit.setAlignment(qcore.Qt.AlignRight)
+        rbgsLayout.addWidget(self.rbgstLEdit, 1)
+
+        ########### HBox Layout for CFL Condition ###########
+        cflLayout = qwid.QHBoxLayout()
+        cflLayout.setContentsMargins(10,5,10,5)
+
+        # A Frame widget containing widgets to enable or disable CFL condition
+        cflFrame = qwid.QFrame(self.tabSolver)
+        cflFrame.setFrameStyle(qwid.QFrame.StyledPanel)
+        cflFrame.setLayout(cflLayout)
+
+        # Check box to enable CFL condition
+        self.cflCondChBox = qwid.QCheckBox("Enable CFL Condition", self.tabSolver)
+        self.cflCondChBox.setToolTip("<p>If enabled,the solver will use given CFL number to adjust time-step<\p>")
+        cflLayout.addWidget(self.cflCondChBox, 3)
+        self.cflCondChBox.stateChanged.connect(self.cflCondCheck)
+
+        # Widgets to get the CFL number
+        self.cflLabel = qwid.QLabel("Courant Number", self.tabSolver)
+        self.cflLabel.setEnabled(False)
+        cflLayout.addWidget(self.cflLabel, 1)
+
+        self.cflLEdit = qwid.QLineEdit("0.5", self.tabSolver)
+        self.cflLEdit.setToolTip("<p>Ideally Courant number should be less than 1<\p>")
+        self.cflLEdit.setAlignment(qcore.Qt.AlignRight)
+        self.cflLEdit.setEnabled(False)
+        cflLayout.addWidget(self.cflLEdit, 1)
+
+        ########### Add everything to the main Layout ###########
+        vbLayout = qwid.QVBoxLayout()
+        vbLayout.setContentsMargins(15,22,15,170)
+        vbLayout.setSpacing(7)
+
+        vbLayout.addLayout(ordLayout, 2)
+        vbLayout.addLayout(intLayout, 2)
+        vbLayout.addLayout(nltLayout, 3)
+        vbLayout.addLayout(upwLayout, 1)
+        vbLayout.addLayout(rbgsLayout, 1)
+        vbLayout.addWidget(cflFrame, 1)
 
         self.tabSolver.setLayout(vbLayout)
 
@@ -379,6 +463,29 @@ class mainWindow(qwid.QMainWindow):
     def gsCBoxSelection(self, i):
         maxDepth = i + 1
         self.vdSBox.setMaximum(i + 1)
+
+    # This function enables or disables the widgets used for fine-tuning
+    # upwinding scheme when it is enabled for non-linear term calculations
+    def upwindCheck(self):
+        if self.nltHUpwdRadBut.isChecked() == True:
+            self.upPeLabel.setEnabled(True)
+            self.upPeLEdit.setEnabled(True)
+            self.upCBLabel.setEnabled(True)
+            self.upCBLEdit.setEnabled(True)
+        else:
+            self.upPeLabel.setEnabled(False)
+            self.upPeLEdit.setEnabled(False)
+            self.upCBLabel.setEnabled(False)
+            self.upCBLEdit.setEnabled(False)
+
+    # This function enables or disables the widgets used to get Courant number
+    def cflCondCheck(self):
+        if self.cflCondChBox.isChecked() == True:
+            self.cflLabel.setEnabled(True)
+            self.cflLEdit.setEnabled(True)
+        else:
+            self.cflLabel.setEnabled(False)
+            self.cflLEdit.setEnabled(False)
 
     # This function enables or disables the LineEdit used to enter the tolerance
     # for Red-Black Gauss-Seidel solver in the multigrid solver
