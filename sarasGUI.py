@@ -53,13 +53,25 @@ class mainWindow(qwid.QMainWindow):
                            ".QLineEdit { font-size: 10pt;}"
                            ".QComboBox { font-size: 10pt;}")
 
+        self.rbcList = [
+            "Small U, Large Pr",
+            "Large U, Large Pr",
+            "Small U, Small Pr",
+            "Large U, Small Pr"
+                ]
+
+        self.lesList = [
+            "No LES",
+            "Spiral Vortex, SG Stress Tensor"
+                ]
+
         self.icList = [
             "Zero-initial condition",
             "Taylor Green Vortices",
             "Sinusoidal Perturbation",
             "Uniform Random Perturbation",
             "Parabolic Random Perturbation",
-            "Sinusoidal Random Perturbation",
+            "Sinusoidal Random Perturbation"
                 ]
         self.setFixedSize(550, 650)
         self.initUI()
@@ -88,7 +100,7 @@ class mainWindow(qwid.QMainWindow):
 
         # Generate button - to generate the YAML
         startButton = qwid.QPushButton('Generate', self)
-        startButton.clicked.connect(self.startSolver)
+        startButton.clicked.connect(self.generateYAML)
         startButton.resize(startButton.sizeHint())
         startButton.move(350, 610)
 
@@ -130,8 +142,10 @@ class mainWindow(qwid.QMainWindow):
 
         ########### Grid Layout for five line edits ###########
         gLayout = qwid.QGridLayout()
-        gLayout.setColumnStretch(0, 3)
+        gLayout.setColumnStretch(0, 1)
         gLayout.setColumnStretch(1, 1)
+        gLayout.setColumnStretch(2, 1)
+        gLayout.setColumnStretch(3, 1)
         gLayout.setContentsMargins(10,3,10,3)
 
         # Widgets to get non-dimensional constants
@@ -141,30 +155,76 @@ class mainWindow(qwid.QMainWindow):
         gLayout.addWidget(self.reLEdit, 0, 1)
 
         self.raLabel = qwid.QLabel("Rayleigh Number", self.tabProg)
-        gLayout.addWidget(self.raLabel, 1, 0)
+        gLayout.addWidget(self.raLabel, 0, 2)
         self.raLEdit = qwid.QLineEdit(self.tabProg)
-        gLayout.addWidget(self.raLEdit, 1, 1)
+        gLayout.addWidget(self.raLEdit, 0, 3)
 
         self.prLabel = qwid.QLabel("Prandtl Number", self.tabProg)
-        gLayout.addWidget(self.prLabel, 2, 0)
+        gLayout.addWidget(self.prLabel, 1, 2)
         self.prLEdit = qwid.QLineEdit(self.tabProg)
-        gLayout.addWidget(self.prLEdit, 2, 1)
+        gLayout.addWidget(self.prLEdit, 1, 3)
 
         self.roLabel = qwid.QLabel("Rossby Number", self.tabProg)
-        gLayout.addWidget(self.roLabel, 3, 0)
+        gLayout.addWidget(self.roLabel, 1, 0)
         self.roLEdit = qwid.QLineEdit(self.tabProg)
-        gLayout.addWidget(self.roLEdit, 3, 1)
+        gLayout.addWidget(self.roLEdit, 1, 1)
 
         self.taLabel = qwid.QLabel("Taylor Number", self.tabProg)
-        gLayout.addWidget(self.taLabel, 4, 0)
+        gLayout.addWidget(self.taLabel, 2, 0)
         self.taLEdit = qwid.QLineEdit(self.tabProg)
-        gLayout.addWidget(self.taLEdit, 4, 1)
+        gLayout.addWidget(self.taLEdit, 2, 1)
 
         self.raLabel.setEnabled(False)
         self.raLEdit.setEnabled(False)
 
         self.prLabel.setEnabled(False)
         self.prLEdit.setEnabled(False)
+
+        ########### HBox Layout for Initial Condition ###########
+        icLayout = qwid.QHBoxLayout()
+        icLayout.setContentsMargins(10,3,10,3)
+
+        # A Frame widget containing widgets to set initial condition
+        icFrame = qwid.QFrame(self.tabProg)
+        icFrame.setFrameStyle(qwid.QFrame.StyledPanel)
+        icFrame.setLayout(icLayout)
+
+        # Check box to restart solver
+        self.icCondChBox = qwid.QCheckBox("Restart Solver", self.tabProg)
+        self.icCondChBox.setToolTip("<p>If enabled,the solver will use the restart file instead of setting initial condition<\p>")
+        icLayout.addWidget(self.icCondChBox, 1)
+        self.icCondChBox.stateChanged.connect(self.icCondCheck)
+
+        icLayout.addStretch(1)
+
+        # Widgets to set initial condition
+        self.icLabel = qwid.QLabel("Initial Condition", self.tabProg)
+        icLayout.addWidget(self.icLabel, 1)
+
+        self.icCBox = qwid.QComboBox(self.tabProg)
+        self.updateICList()
+        icLayout.addWidget(self.icCBox, 1)
+
+        ########### HBox Layout for Channel Flow ###########
+        chflLayout = qwid.QHBoxLayout()
+        chflLayout.setContentsMargins(10,3,10,3)
+
+        self.chVelLabel = qwid.QLabel("Mean Velocity", self.tabProg)
+        self.chVelLEdit = qwid.QLineEdit("1.0", self.tabProg)
+        chflLayout.addWidget(self.chVelLabel, 1)
+        chflLayout.addWidget(self.chVelLEdit, 1)
+
+        chflLayout.addStretch(1)
+
+        self.chIntLabel = qwid.QLabel("Perturbation Intensity", self.tabProg)
+        self.chIntLEdit = qwid.QLineEdit("1.0", self.tabProg)
+        chflLayout.addWidget(self.chIntLabel, 1)
+        chflLayout.addWidget(self.chIntLEdit, 1)
+
+        self.chVelLabel.setEnabled(False)
+        self.chVelLEdit.setEnabled(False)
+        self.chIntLabel.setEnabled(False)
+        self.chIntLEdit.setEnabled(False)
 
         ########### HBox Layout for Forcing ###########
         forceLayout = qwid.QHBoxLayout()
@@ -235,31 +295,6 @@ class mainWindow(qwid.QMainWindow):
         self.pGradLEdit = qwid.QLineEdit("1.0", self.tabProg)
         pGradLayout.addWidget(self.pGradLEdit, 1)
 
-        ########### HBox Layout for Initial Condition ###########
-        icLayout = qwid.QHBoxLayout()
-        icLayout.setContentsMargins(10,3,10,3)
-
-        # A Frame widget containing widgets to set initial condition
-        icFrame = qwid.QFrame(self.tabProg)
-        icFrame.setFrameStyle(qwid.QFrame.StyledPanel)
-        icFrame.setLayout(icLayout)
-
-        # Check box to restart solver
-        self.icCondChBox = qwid.QCheckBox("Restart Solver", self.tabProg)
-        self.icCondChBox.setToolTip("<p>If enabled,the solver will use the restart file instead of setting initial condition<\p>")
-        icLayout.addWidget(self.icCondChBox, 1)
-        self.icCondChBox.stateChanged.connect(self.icCondCheck)
-
-        icLayout.addStretch(1)
-
-        # Widgets to set initial condition
-        self.icLabel = qwid.QLabel("Initial Condition", self.tabProg)
-        icLayout.addWidget(self.icLabel, 1)
-
-        self.icCBox = qwid.QComboBox(self.tabProg)
-        self.updateICList()
-        icLayout.addWidget(self.icCBox, 1)
-
         ########### HBox Layout for Heating Plate ###########
         hpLayout = qwid.QHBoxLayout()
         hpLayout.setContentsMargins(10,5,10,5)
@@ -288,19 +323,51 @@ class mainWindow(qwid.QMainWindow):
         self.hpLabel.setEnabled(False)
         self.hpLEdit.setEnabled(False)
 
+        ########### HBox Layout for RBC Type ###########
+        rbcLayout = qwid.QHBoxLayout()
+        rbcLayout.setContentsMargins(10,5,10,5)
+
+        # Widgets to get the RBC Type
+        self.rbcLabel = qwid.QLabel("RBC Type", self.tabProg)
+        rbcLayout.addWidget(self.rbcLabel, 1)
+
+        self.rbcCBox = qwid.QComboBox(self.tabProg)
+        for i in range(len(self.rbcList)):
+            self.rbcCBox.addItem(self.rbcList[i])
+        rbcLayout.addWidget(self.rbcCBox, 1)
+        self.rbcCBox.setCurrentIndex(1)
+
+        self.rbcLabel.setEnabled(False)
+        self.rbcCBox.setEnabled(False)
+
+        ########### HBox Layout for LES Model ###########
+        lesLayout = qwid.QHBoxLayout()
+        lesLayout.setContentsMargins(10,5,10,5)
+
+        # Widgets to get the LES Model
+        self.lesLabel = qwid.QLabel("LES Model", self.tabProg)
+        lesLayout.addWidget(self.lesLabel, 1)
+
+        self.lesCBox = qwid.QComboBox(self.tabProg)
+        self.updateLESList()
+        lesLayout.addWidget(self.lesCBox, 1)
+
         ########### Add everything to the main Layout ###########
         vbLayout = qwid.QVBoxLayout()
-        vbLayout.setContentsMargins(15,22,15,80)
+        vbLayout.setContentsMargins(15,22,15,15)
         vbLayout.setSpacing(11)
 
         vbLayout.addLayout(pTypLayout)
         vbLayout.addLayout(gLayout)
         vbLayout.addWidget(icFrame)
+        vbLayout.addLayout(chflLayout)
         vbLayout.addLayout(forceLayout)
         vbLayout.addLayout(rotAxLayout)
         vbLayout.addLayout(gvLayout)
         vbLayout.addLayout(pGradLayout)
         vbLayout.addWidget(hpFrame)
+        vbLayout.addLayout(rbcLayout)
+        vbLayout.addLayout(lesLayout)
 
         self.forceCheck()
         self.tabProg.setLayout(vbLayout)
@@ -777,7 +844,7 @@ class mainWindow(qwid.QMainWindow):
                 "Sinusoidal Perturbation",
                 "Uniform Random Perturbation",
                 "Parabolic Random Perturbation",
-                "Sinusoidal Random Perturbation",
+                "Sinusoidal Random Perturbation"
                     ]
 
             self.updateICList()
@@ -787,6 +854,16 @@ class mainWindow(qwid.QMainWindow):
             self.hpLEdit.setEnabled(False)
 
             self.forceCheck()
+
+            self.rbcLabel.setEnabled(False)
+            self.rbcCBox.setEnabled(False)
+
+            self.lesList = [
+                "No LES",
+                "Spiral Vortex, SG Stress Tensor"
+                    ]
+
+            self.updateLESList()
 
         else:
             self.reLabel.setEnabled(False)
@@ -815,6 +892,17 @@ class mainWindow(qwid.QMainWindow):
             self.hpCondCheck()
 
             self.forceCheck()
+
+            self.rbcLabel.setEnabled(True)
+            self.rbcCBox.setEnabled(True)
+
+            self.lesList = [
+                "No LES",
+                "Spiral Vortex, SG Stress Tensor",
+                "Spiral Vortex, SG Scalar Flux"
+                    ]
+
+            self.updateLESList()
 
 
     # This function enables disables force vector LineEdits based on forcing chosen
@@ -927,21 +1015,15 @@ class mainWindow(qwid.QMainWindow):
         for i in range(len(self.icList)):
             self.icCBox.addItem(self.icList[i])
 
-    # This function interfaces with the multi-grid solver and sets its parameters.
-    # These parameters are read from the inputs given in the window.
-    # It then opens the console window and hands the baton to it.
-    def startSolver(self):
-        tolValue = 0.0
-        # Check if tolerance specified is valid
-        try:
-            tolValue = float(self.tolLEdit.text())
-        except:
-            errDialog = qwid.QMessageBox.critical(self, 'Invalid Tolerance', "The specified tolerance is not a valid floating point number! :(", qwid.QMessageBox.Ok)
-            return 1
+    # This function updates the LES List depending on user parameters
+    def updateLESList(self):
+        self.lesCBox.clear()
+        for i in range(len(self.lesList)):
+            self.lesCBox.addItem(self.lesList[i])
 
-        # Open console window and run the solver
-        self.cWindow = consoleWindow()
-        self.cWindow.runSolver()
+    # This function generates the YAML file
+    def generateYAML(self):
+        errDialog = qwid.QMessageBox.critical(self, 'Under Development', "The final YAML file generation step is under development. Implementation ongoing.", qwid.QMessageBox.Ok)
 
     # Clingy function for a clingy app - makes sure that the user wants to quit the app
     def closeEvent(self, event):
@@ -956,63 +1038,6 @@ class mainWindow(qwid.QMainWindow):
             event.accept()
         else:
             event.ignore()
-
-############################### CONSOLE WINDOW ##################################
-
-class consoleWindow(qwid.QMainWindow):
-    def __init__(self):
-        super().__init__()
-
-        # Three boolean flags for the three check boxes in the main window for plots
-        # Set to true since the elements have been removed
-        self.sPlot = True
-        self.ePlot = True
-        self.rPlot = True
-
-        self.setFixedSize(400, 400)
-        self.initUI()
-
-    def initUI(self):
-        # Text box to output console stream
-        self.conTEdit = qwid.QTextEdit(self)
-        self.conTEdit.resize(340, 300)
-        self.conTEdit.move(30, 30)
-
-        # Plot button
-        plotButton = qwid.QPushButton('Plot', self)
-        plotButton.resize(plotButton.sizeHint())
-        plotButton.move(165, 350)
-
-        # The plot button will be disabled if none of the check boxes in main window are checked
-        if (self.sPlot or self.ePlot or self.rPlot):
-            plotButton.setEnabled(True)
-        else:
-            plotButton.setEnabled(False)
-
-        # Close button
-        closeButton = qwid.QPushButton('Close', self)
-        closeButton.clicked.connect(self.close)
-        closeButton.resize(closeButton.sizeHint())
-        closeButton.move(275, 350)
-
-        # Window title and icon
-        self.setWindowTitle('MG-Lite Console Output')
-        self.setWindowIcon(qgui.QIcon('icon.png'))
-
-        # Reveal thyself
-        self.show()
-
-    # As the function name says, it calls the main() of the MG solver
-    def runSolver(self):
-        #mgSolver.main(self)
-        qwid.QApplication.processEvents()
-
-    # This function is called by the MG solver at all places where it normally uses the print()
-    # command. The string passed to the print command is instead passed to this function,
-    # which sends it to the text box of the console window.
-    def updateTEdit(self, cOutString):
-        self.conTEdit.append(cOutString)
-        qwid.QApplication.processEvents()
 
 
 ############################## THAT'S IT, FOLKS!! ###############################
