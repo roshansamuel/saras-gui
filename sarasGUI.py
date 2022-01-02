@@ -182,7 +182,7 @@ class mainWindow(qwid.QMainWindow):
 
         ########### HBox Layout for Initial Condition ###########
         icLayout = qwid.QHBoxLayout()
-        icLayout.setContentsMargins(10,3,10,3)
+        icLayout.setContentsMargins(10,5,10,5)
 
         # A Frame widget containing widgets to set initial condition
         icFrame = qwid.QFrame(self.tabProg)
@@ -334,7 +334,7 @@ class mainWindow(qwid.QMainWindow):
         self.rbcCBox = qwid.QComboBox(self.tabProg)
         for i in range(len(self.rbcList)):
             self.rbcCBox.addItem(self.rbcList[i])
-        rbcLayout.addWidget(self.rbcCBox, 1)
+        rbcLayout.addWidget(self.rbcCBox, 2)
         self.rbcCBox.setCurrentIndex(1)
 
         self.rbcLabel.setEnabled(False)
@@ -350,7 +350,7 @@ class mainWindow(qwid.QMainWindow):
 
         self.lesCBox = qwid.QComboBox(self.tabProg)
         self.updateLESList()
-        lesLayout.addWidget(self.lesCBox, 1)
+        lesLayout.addWidget(self.lesCBox, 2)
 
         ########### Add everything to the main Layout ###########
         vbLayout = qwid.QVBoxLayout()
