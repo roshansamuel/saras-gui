@@ -22,6 +22,14 @@ class mainWindow(qwid.QMainWindow):
                            ".QLineEdit { font-size: 10pt;}"
                            ".QComboBox { font-size: 10pt;}")
 
+        self.icList = [
+            "Zero-initial condition",
+            "Taylor Green Vortices",
+            "Sinusoidal Perturbation",
+            "Uniform Random Perturbation",
+            "Parabolic Random Perturbation",
+            "Sinusoidal Random Perturbation",
+                ]
         self.setFixedSize(550, 650)
         self.initUI()
 
@@ -80,6 +88,7 @@ class mainWindow(qwid.QMainWindow):
         self.pTypHydRadBut = qwid.QRadioButton("Hydro", self.tabProg)
         self.pTypTheRadBut = qwid.QRadioButton("Thermal", self.tabProg)
         self.pTypHydRadBut.setChecked(True)
+        self.pTypHydRadBut.toggled.connect(self.pTypeUpdate)
 
         pTypRButGroup.addButton(self.pTypHydRadBut)
         pTypRButGroup.addButton(self.pTypTheRadBut)
@@ -92,37 +101,163 @@ class mainWindow(qwid.QMainWindow):
         gLayout = qwid.QGridLayout()
         gLayout.setColumnStretch(0, 3)
         gLayout.setColumnStretch(1, 1)
-        gLayout.setContentsMargins(10,8,10,8)
+        gLayout.setContentsMargins(10,3,10,3)
 
         # Widgets to get non-dimensional constants
-        gLayout.addWidget(qwid.QLabel("Reynolds Number", self.tabProg), 0, 0)
+        self.reLabel = qwid.QLabel("Reynolds Number", self.tabProg)
+        gLayout.addWidget(self.reLabel, 0, 0)
         self.reLEdit = qwid.QLineEdit(self.tabProg)
         gLayout.addWidget(self.reLEdit, 0, 1)
 
-        gLayout.addWidget(qwid.QLabel("Rayleigh Number", self.tabProg), 1, 0)
+        self.raLabel = qwid.QLabel("Rayleigh Number", self.tabProg)
+        gLayout.addWidget(self.raLabel, 1, 0)
         self.raLEdit = qwid.QLineEdit(self.tabProg)
         gLayout.addWidget(self.raLEdit, 1, 1)
 
-        gLayout.addWidget(qwid.QLabel("Prandtl Number", self.tabProg), 2, 0)
+        self.prLabel = qwid.QLabel("Prandtl Number", self.tabProg)
+        gLayout.addWidget(self.prLabel, 2, 0)
         self.prLEdit = qwid.QLineEdit(self.tabProg)
         gLayout.addWidget(self.prLEdit, 2, 1)
 
-        gLayout.addWidget(qwid.QLabel("Rossby Number", self.tabProg), 3, 0)
+        self.roLabel = qwid.QLabel("Rossby Number", self.tabProg)
+        gLayout.addWidget(self.roLabel, 3, 0)
         self.roLEdit = qwid.QLineEdit(self.tabProg)
         gLayout.addWidget(self.roLEdit, 3, 1)
 
-        gLayout.addWidget(qwid.QLabel("Taylor Number", self.tabProg), 4, 0)
+        self.taLabel = qwid.QLabel("Taylor Number", self.tabProg)
+        gLayout.addWidget(self.taLabel, 4, 0)
         self.taLEdit = qwid.QLineEdit(self.tabProg)
         gLayout.addWidget(self.taLEdit, 4, 1)
 
+        self.raLabel.setEnabled(False)
+        self.raLEdit.setEnabled(False)
+
+        self.prLabel.setEnabled(False)
+        self.prLEdit.setEnabled(False)
+
+        ########### HBox Layout for Forcing ###########
+        forceLayout = qwid.QHBoxLayout()
+        forceLayout.setContentsMargins(10,5,10,5)
+
+        forceLayout.addWidget(qwid.QLabel("Forcing", self.tabProg), 1)
+        forceLayout.addStretch(1)
+
+        # Widgets to set forcing
+        self.forRotChBox = qwid.QCheckBox("Rotation", self.tabProg)
+        self.forBuoChBox = qwid.QCheckBox("Buoyancy", self.tabProg)
+        self.forPGrChBox = qwid.QCheckBox("Pressure Gradient", self.tabProg)
+
+        self.forRotChBox.stateChanged.connect(self.forceCheck)
+        self.forBuoChBox.stateChanged.connect(self.forceCheck)
+        self.forPGrChBox.stateChanged.connect(self.forceCheck)
+
+        forceLayout.addWidget(self.forRotChBox, 1)
+        forceLayout.addWidget(self.forBuoChBox, 1)
+        forceLayout.addWidget(self.forPGrChBox, 1)
+
+        self.forBuoChBox.setEnabled(False)
+
+        ########### HBox Layout for Rotation Direction ###########
+        rotAxLayout = qwid.QHBoxLayout()
+        rotAxLayout.setContentsMargins(10,3,10,3)
+
+        self.rotAxLabel = qwid.QLabel("Rotation Axis", self.tabProg)
+        rotAxLayout.addWidget(self.rotAxLabel, 1)
+
+        rotAxLayout.addStretch(1)
+
+        # Widgets to set initial condition
+        self.rotAxXLEdit = qwid.QLineEdit("0", self.tabProg)
+        self.rotAxYLEdit = qwid.QLineEdit("0", self.tabProg)
+        self.rotAxZLEdit = qwid.QLineEdit("1", self.tabProg)
+        rotAxLayout.addWidget(self.rotAxXLEdit, 1)
+        rotAxLayout.addWidget(self.rotAxYLEdit, 1)
+        rotAxLayout.addWidget(self.rotAxZLEdit, 1)
+
+        ########### HBox Layout for Gravity Direction ###########
+        gvLayout = qwid.QHBoxLayout()
+        gvLayout.setContentsMargins(10,3,10,3)
+
+        self.gvLabel = qwid.QLabel("Gravity Direction", self.tabProg)
+        gvLayout.addWidget(self.gvLabel, 1)
+
+        gvLayout.addStretch(1)
+
+        # Widgets to set initial condition
+        self.gvXLEdit = qwid.QLineEdit("0", self.tabProg)
+        self.gvYLEdit = qwid.QLineEdit("0", self.tabProg)
+        self.gvZLEdit = qwid.QLineEdit("-1", self.tabProg)
+        gvLayout.addWidget(self.gvXLEdit, 1)
+        gvLayout.addWidget(self.gvYLEdit, 1)
+        gvLayout.addWidget(self.gvZLEdit, 1)
+
+        ########### HBox Layout for Initial Condition ###########
+        icLayout = qwid.QHBoxLayout()
+        icLayout.setContentsMargins(10,3,10,3)
+
+        # A Frame widget containing widgets to set initial condition
+        icFrame = qwid.QFrame(self.tabProg)
+        icFrame.setFrameStyle(qwid.QFrame.StyledPanel)
+        icFrame.setLayout(icLayout)
+
+        # Check box to restart solver
+        self.icCondChBox = qwid.QCheckBox("Restart Solver", self.tabProg)
+        self.icCondChBox.setToolTip("<p>If enabled,the solver will use the restart file instead of setting initial condition<\p>")
+        icLayout.addWidget(self.icCondChBox, 1)
+        self.icCondChBox.stateChanged.connect(self.icCondCheck)
+
+        icLayout.addStretch(1)
+
+        # Widgets to set initial condition
+        self.icLabel = qwid.QLabel("Initial Condition", self.tabProg)
+        icLayout.addWidget(self.icLabel, 1)
+
+        self.icCBox = qwid.QComboBox(self.tabProg)
+        self.updateICList()
+        icLayout.addWidget(self.icCBox, 1)
+
+        ########### HBox Layout for Heating Plate ###########
+        hpLayout = qwid.QHBoxLayout()
+        hpLayout.setContentsMargins(10,5,10,5)
+
+        # A Frame widget containing widgets to enable or disable heating plate
+        hpFrame = qwid.QFrame(self.tabProg)
+        hpFrame.setFrameStyle(qwid.QFrame.StyledPanel)
+        hpFrame.setLayout(hpLayout)
+
+        # Check box to enable heating plate
+        self.hpCondChBox = qwid.QCheckBox("Heating Plate", self.tabProg)
+        hpLayout.addWidget(self.hpCondChBox, 3)
+        self.hpCondChBox.stateChanged.connect(self.hpCondCheck)
+
+        # Widgets to get the plate radius
+        self.hpLabel = qwid.QLabel("Plate Radius", self.tabProg)
+        self.hpLabel.setEnabled(False)
+        hpLayout.addWidget(self.hpLabel, 1)
+
+        self.hpLEdit = qwid.QLineEdit("0.5", self.tabProg)
+        self.hpLEdit.setAlignment(qcore.Qt.AlignRight)
+        self.hpLEdit.setEnabled(False)
+        hpLayout.addWidget(self.hpLEdit, 1)
+
+        self.hpCondChBox.setEnabled(False)
+        self.hpLabel.setEnabled(False)
+        self.hpLEdit.setEnabled(False)
+
         ########### Add everything to the main Layout ###########
         vbLayout = qwid.QVBoxLayout()
-        vbLayout.setContentsMargins(15,22,15,150)
-        vbLayout.setSpacing(22)
+        vbLayout.setContentsMargins(15,22,15,110)
+        vbLayout.setSpacing(11)
 
         vbLayout.addLayout(pTypLayout)
         vbLayout.addLayout(gLayout)
+        vbLayout.addWidget(icFrame)
+        vbLayout.addLayout(forceLayout)
+        vbLayout.addLayout(rotAxLayout)
+        vbLayout.addLayout(gvLayout)
+        vbLayout.addWidget(hpFrame)
 
+        self.forceCheck()
         self.tabProg.setLayout(vbLayout)
 
 
@@ -576,6 +711,97 @@ class mainWindow(qwid.QMainWindow):
         self.tabMG.setLayout(vbLayout)
 
 
+    # This function updates the Program tab based on problem type
+    def pTypeUpdate(self):
+        if self.pTypHydRadBut.isChecked() == True:
+            self.reLabel.setEnabled(True)
+            self.reLEdit.setEnabled(True)
+
+            self.raLabel.setEnabled(False)
+            self.raLEdit.setEnabled(False)
+
+            self.prLabel.setEnabled(False)
+            self.prLEdit.setEnabled(False)
+
+            self.forBuoChBox.setEnabled(False)
+            self.forPGrChBox.setEnabled(True)
+
+            self.icList = [
+                "Zero-initial condition",
+                "Taylor Green Vortices",
+                "Sinusoidal Perturbation",
+                "Uniform Random Perturbation",
+                "Parabolic Random Perturbation",
+                "Sinusoidal Random Perturbation",
+                    ]
+
+            self.updateICList()
+
+            self.hpCondChBox.setEnabled(False)
+            self.hpLabel.setEnabled(False)
+            self.hpLEdit.setEnabled(False)
+
+            self.forceCheck()
+
+        else:
+            self.reLabel.setEnabled(False)
+            self.reLEdit.setEnabled(False)
+
+            self.raLabel.setEnabled(True)
+            self.raLEdit.setEnabled(True)
+
+            self.prLabel.setEnabled(True)
+            self.prLEdit.setEnabled(True)
+
+            self.forBuoChBox.setEnabled(True)
+            self.forPGrChBox.setEnabled(False)
+
+            self.icList = [
+                "Zero-initial condition",
+                "Taylor Green Vortices",
+                "Linear Temperature Profile",
+                "Cosine Temperature Profile",
+                "Sine Temperature Profile"
+                    ]
+
+            self.updateICList()
+
+            self.hpCondChBox.setEnabled(True)
+            self.hpCondCheck()
+
+            self.forceCheck()
+
+
+    # This function enables disables force vector LineEdits based on forcing chosen
+    def forceCheck(self):
+        if self.forRotChBox.isChecked() == True:
+            self.rotAxLabel.setEnabled(True)
+            self.rotAxXLEdit.setEnabled(True)
+            self.rotAxYLEdit.setEnabled(True)
+            self.rotAxZLEdit.setEnabled(True)
+        else:
+            self.rotAxLabel.setEnabled(False)
+            self.rotAxXLEdit.setEnabled(False)
+            self.rotAxYLEdit.setEnabled(False)
+            self.rotAxZLEdit.setEnabled(False)
+
+        if self.forBuoChBox.isChecked() == True and self.forBuoChBox.isEnabled() == True:
+            self.gvLabel.setEnabled(True)
+            self.gvXLEdit.setEnabled(True)
+            self.gvYLEdit.setEnabled(True)
+            self.gvZLEdit.setEnabled(True)
+        else:
+            self.gvLabel.setEnabled(False)
+            self.gvXLEdit.setEnabled(False)
+            self.gvYLEdit.setEnabled(False)
+            self.gvZLEdit.setEnabled(False)
+
+        if self.forPGrChBox.isChecked() == True and self.forPGrChBox.isEnabled() == True:
+            pass
+        else:
+            pass
+
+
     # This function enables or disables the widgets used for fine-tuning
     # upwinding scheme when it is enabled for non-linear term calculations
     def upwindCheck(self):
@@ -598,6 +824,24 @@ class mainWindow(qwid.QMainWindow):
         else:
             self.probeLabel.setEnabled(False)
             self.probeLEdit.setEnabled(False)
+
+    # This function enables or disables the widgets used to set initial condition
+    def icCondCheck(self):
+        if self.icCondChBox.isChecked() == True:
+            self.icLabel.setEnabled(False)
+            self.icCBox.setEnabled(False)
+        else:
+            self.icLabel.setEnabled(True)
+            self.icCBox.setEnabled(True)
+
+    # This function enables or disables the widgets for heating plate
+    def hpCondCheck(self):
+        if self.hpCondChBox.isChecked() == True:
+            self.hpLabel.setEnabled(True)
+            self.hpLEdit.setEnabled(True)
+        else:
+            self.hpLabel.setEnabled(False)
+            self.hpLEdit.setEnabled(False)
 
     # This function enables or disables the widgets used to get Courant number
     def cflCondCheck(self):
@@ -629,6 +873,12 @@ class mainWindow(qwid.QMainWindow):
         else:
             self.betLabel.setEnabled(False)
             self.betLEdit.setEnabled(False)
+
+    # This function updates the IC List depending on user parameters
+    def updateICList(self):
+        self.icCBox.clear()
+        for i in range(len(self.icList)):
+            self.icCBox.addItem(self.icList[i])
 
     # This function interfaces with the multi-grid solver and sets its parameters.
     # These parameters are read from the inputs given in the window.
