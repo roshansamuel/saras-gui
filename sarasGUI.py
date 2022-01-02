@@ -110,7 +110,7 @@ class mainWindow(qwid.QMainWindow):
     def fillProgTab(self):
         ########### HBox Layout for Solver Variables ###########
         pTypLayout = qwid.QHBoxLayout()
-        pTypLayout.setContentsMargins(10,8,10,8)
+        pTypLayout.setContentsMargins(10,4,10,4)
         pTypLayout.setSpacing(5)
 
         pTypLayout.addWidget(qwid.QLabel("Problem Type", self.tabProg), 1)
@@ -193,11 +193,11 @@ class mainWindow(qwid.QMainWindow):
         rotAxLayout.setContentsMargins(10,3,10,3)
 
         self.rotAxLabel = qwid.QLabel("Rotation Axis", self.tabProg)
-        rotAxLayout.addWidget(self.rotAxLabel, 1)
+        rotAxLayout.addWidget(self.rotAxLabel, 2)
 
         rotAxLayout.addStretch(1)
 
-        # Widgets to set initial condition
+        # Widgets to set rotation axis
         self.rotAxXLEdit = qwid.QLineEdit("0", self.tabProg)
         self.rotAxYLEdit = qwid.QLineEdit("0", self.tabProg)
         self.rotAxZLEdit = qwid.QLineEdit("1", self.tabProg)
@@ -210,17 +210,30 @@ class mainWindow(qwid.QMainWindow):
         gvLayout.setContentsMargins(10,3,10,3)
 
         self.gvLabel = qwid.QLabel("Gravity Direction", self.tabProg)
-        gvLayout.addWidget(self.gvLabel, 1)
+        gvLayout.addWidget(self.gvLabel, 2)
 
         gvLayout.addStretch(1)
 
-        # Widgets to set initial condition
+        # Widgets to set gravity direction
         self.gvXLEdit = qwid.QLineEdit("0", self.tabProg)
         self.gvYLEdit = qwid.QLineEdit("0", self.tabProg)
         self.gvZLEdit = qwid.QLineEdit("-1", self.tabProg)
         gvLayout.addWidget(self.gvXLEdit, 1)
         gvLayout.addWidget(self.gvYLEdit, 1)
         gvLayout.addWidget(self.gvZLEdit, 1)
+
+        ########### HBox Layout for Mean Pressure Gradient ###########
+        pGradLayout = qwid.QHBoxLayout()
+        pGradLayout.setContentsMargins(10,3,10,3)
+
+        self.pGradLabel = qwid.QLabel("Mean Pressure Gradient", self.tabProg)
+        pGradLayout.addWidget(self.pGradLabel, 2)
+
+        pGradLayout.addStretch(1)
+
+        # Widgets to set value of mean pressure gradient
+        self.pGradLEdit = qwid.QLineEdit("1.0", self.tabProg)
+        pGradLayout.addWidget(self.pGradLEdit, 1)
 
         ########### HBox Layout for Initial Condition ###########
         icLayout = qwid.QHBoxLayout()
@@ -277,7 +290,7 @@ class mainWindow(qwid.QMainWindow):
 
         ########### Add everything to the main Layout ###########
         vbLayout = qwid.QVBoxLayout()
-        vbLayout.setContentsMargins(15,22,15,110)
+        vbLayout.setContentsMargins(15,22,15,80)
         vbLayout.setSpacing(11)
 
         vbLayout.addLayout(pTypLayout)
@@ -286,6 +299,7 @@ class mainWindow(qwid.QMainWindow):
         vbLayout.addLayout(forceLayout)
         vbLayout.addLayout(rotAxLayout)
         vbLayout.addLayout(gvLayout)
+        vbLayout.addLayout(pGradLayout)
         vbLayout.addWidget(hpFrame)
 
         self.forceCheck()
@@ -828,9 +842,11 @@ class mainWindow(qwid.QMainWindow):
             self.gvZLEdit.setEnabled(False)
 
         if self.forPGrChBox.isChecked() == True and self.forPGrChBox.isEnabled() == True:
-            pass
+            self.pGradLabel.setEnabled(True)
+            self.pGradLEdit.setEnabled(True)
         else:
-            pass
+            self.pGradLabel.setEnabled(False)
+            self.pGradLEdit.setEnabled(False)
 
 
     # This function enables or disables the widgets used for fine-tuning
