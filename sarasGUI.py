@@ -203,6 +203,7 @@ class mainWindow(qwid.QMainWindow):
 
         self.icCBox = qwid.QComboBox(self.tabProg)
         self.updateICList()
+        self.icCBox.currentIndexChanged.connect(self.icCBoxSelection)
         icLayout.addWidget(self.icCBox, 1)
 
         ########### HBox Layout for Channel Flow ###########
@@ -877,6 +878,11 @@ class mainWindow(qwid.QMainWindow):
             self.reLabel.setEnabled(False)
             self.reLEdit.setEnabled(False)
 
+            self.chVelLabel.setEnabled(False)
+            self.chVelLEdit.setEnabled(False)
+            self.chIntLabel.setEnabled(False)
+            self.chIntLEdit.setEnabled(False)
+
             self.raLabel.setEnabled(True)
             self.raLEdit.setEnabled(True)
 
@@ -944,6 +950,19 @@ class mainWindow(qwid.QMainWindow):
             self.pGradLabel.setEnabled(False)
             self.pGradLEdit.setEnabled(False)
 
+    # This enables/disables widgets pertinent to channel flow ICs
+    def icCBoxSelection(self, i):
+        if self.pTypHydRadBut.isChecked() == True:
+            if self.icCBox.currentIndex() > 2:
+                self.chVelLabel.setEnabled(True)
+                self.chVelLEdit.setEnabled(True)
+                self.chIntLabel.setEnabled(True)
+                self.chIntLEdit.setEnabled(True)
+            else:
+                self.chVelLabel.setEnabled(False)
+                self.chVelLEdit.setEnabled(False)
+                self.chIntLabel.setEnabled(False)
+                self.chIntLEdit.setEnabled(False)
 
     # This function enables or disables the widgets used for fine-tuning
     # upwinding scheme when it is enabled for non-linear term calculations
