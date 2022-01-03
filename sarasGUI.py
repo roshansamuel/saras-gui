@@ -424,9 +424,9 @@ class mainWindow(qwid.QMainWindow):
         gLayout.addWidget(self.yPerChBox, 2, 3)
         gLayout.addWidget(self.zPerChBox, 3, 3)
 
-        self.xPerChBox.stateChanged.connect(self.periodicCheck)
-        self.yPerChBox.stateChanged.connect(self.periodicCheck)
-        self.zPerChBox.stateChanged.connect(self.periodicCheck)
+        self.xPerChBox.stateChanged.connect(self.periodicCheckX)
+        self.yPerChBox.stateChanged.connect(self.periodicCheckY)
+        self.zPerChBox.stateChanged.connect(self.periodicCheckZ)
 
         gLayout.addWidget(qwid.QLabel("Uniform", self.tabDomain), 0, 4)
         self.xUnifChBox = qwid.QCheckBox(self.tabDomain)
@@ -439,9 +439,9 @@ class mainWindow(qwid.QMainWindow):
         gLayout.addWidget(self.yUnifChBox, 2, 4)
         gLayout.addWidget(self.zUnifChBox, 3, 4)
 
-        self.xUnifChBox.stateChanged.connect(self.uniformCheck)
-        self.yUnifChBox.stateChanged.connect(self.uniformCheck)
-        self.zUnifChBox.stateChanged.connect(self.uniformCheck)
+        self.xUnifChBox.stateChanged.connect(self.uniformCheckX)
+        self.yUnifChBox.stateChanged.connect(self.uniformCheckY)
+        self.zUnifChBox.stateChanged.connect(self.uniformCheckZ)
 
         gLayout.addWidget(qwid.QLabel("Beta", self.tabDomain), 0, 5)
         self.xBetaLEdit = qwid.QLineEdit("1.0", self.tabDomain)
@@ -1007,8 +1007,8 @@ class mainWindow(qwid.QMainWindow):
             self.mgTolLEdit.setEnabled(False)
 
     # This function enables or disables non-uniform grid
-    # depending on periodicity of domain
-    def periodicCheck(self):
+    # depending on periodicity of domain in X direction
+    def periodicCheckX(self):
         if self.xPerChBox.isChecked() == True:
             self.xUnifChBox.setChecked(True)
             self.xUnifChBox.setEnabled(False)
@@ -1016,6 +1016,9 @@ class mainWindow(qwid.QMainWindow):
             self.xUnifChBox.setChecked(False)
             self.xUnifChBox.setEnabled(True)
 
+    # This function enables or disables non-uniform grid
+    # depending on periodicity of domain in Y direction
+    def periodicCheckY(self):
         if self.yPerChBox.isChecked() == True:
             self.yUnifChBox.setChecked(True)
             self.yUnifChBox.setEnabled(False)
@@ -1023,6 +1026,9 @@ class mainWindow(qwid.QMainWindow):
             self.yUnifChBox.setChecked(False)
             self.yUnifChBox.setEnabled(True)
 
+    # This function enables or disables non-uniform grid
+    # depending on periodicity of domain in Z direction
+    def periodicCheckZ(self):
         if self.zPerChBox.isChecked() == True:
             self.zUnifChBox.setChecked(True)
             self.zUnifChBox.setEnabled(False)
@@ -1031,18 +1037,24 @@ class mainWindow(qwid.QMainWindow):
             self.zUnifChBox.setEnabled(True)
 
     # This function enables or disables setting of stretching parameter
-    # depending on whether grid is uniform or not
-    def uniformCheck(self):
+    # depending on whether grid is uniform or not in X direction
+    def uniformCheckX(self):
         if self.xUnifChBox.isChecked() == True:
             self.xBetaLEdit.setEnabled(False)
         else:
             self.xBetaLEdit.setEnabled(True)
 
+    # This function enables or disables setting of stretching parameter
+    # depending on whether grid is uniform or not in Y direction
+    def uniformCheckY(self):
         if self.yUnifChBox.isChecked() == True:
             self.yBetaLEdit.setEnabled(False)
         else:
             self.yBetaLEdit.setEnabled(True)
 
+    # This function enables or disables setting of stretching parameter
+    # depending on whether grid is uniform or not in Z direction
+    def uniformCheckZ(self):
         if self.zUnifChBox.isChecked() == True:
             self.zBetaLEdit.setEnabled(False)
         else:
