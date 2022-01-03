@@ -424,6 +424,10 @@ class mainWindow(qwid.QMainWindow):
         gLayout.addWidget(self.yPerChBox, 2, 3)
         gLayout.addWidget(self.zPerChBox, 3, 3)
 
+        self.xPerChBox.stateChanged.connect(self.periodicCheck)
+        self.yPerChBox.stateChanged.connect(self.periodicCheck)
+        self.zPerChBox.stateChanged.connect(self.periodicCheck)
+
         gLayout.addWidget(qwid.QLabel("Uniform", self.tabDomain), 0, 4)
         self.xUnifChBox = qwid.QCheckBox(self.tabDomain)
         self.yUnifChBox = qwid.QCheckBox(self.tabDomain)
@@ -434,6 +438,10 @@ class mainWindow(qwid.QMainWindow):
         gLayout.addWidget(self.xUnifChBox, 1, 4)
         gLayout.addWidget(self.yUnifChBox, 2, 4)
         gLayout.addWidget(self.zUnifChBox, 3, 4)
+
+        self.xUnifChBox.stateChanged.connect(self.uniformCheck)
+        self.yUnifChBox.stateChanged.connect(self.uniformCheck)
+        self.zUnifChBox.stateChanged.connect(self.uniformCheck)
 
         gLayout.addWidget(qwid.QLabel("Beta", self.tabDomain), 0, 5)
         self.xBetaLEdit = qwid.QLineEdit("1.0", self.tabDomain)
@@ -997,6 +1005,48 @@ class mainWindow(qwid.QMainWindow):
         else:
             self.mgTolLabel.setEnabled(False)
             self.mgTolLEdit.setEnabled(False)
+
+    # This function enables or disables non-uniform grid
+    # depending on periodicity of domain
+    def periodicCheck(self):
+        if self.xPerChBox.isChecked() == True:
+            self.xUnifChBox.setChecked(True)
+            self.xUnifChBox.setEnabled(False)
+        else:
+            self.xUnifChBox.setChecked(False)
+            self.xUnifChBox.setEnabled(True)
+
+        if self.yPerChBox.isChecked() == True:
+            self.yUnifChBox.setChecked(True)
+            self.yUnifChBox.setEnabled(False)
+        else:
+            self.yUnifChBox.setChecked(False)
+            self.yUnifChBox.setEnabled(True)
+
+        if self.zPerChBox.isChecked() == True:
+            self.zUnifChBox.setChecked(True)
+            self.zUnifChBox.setEnabled(False)
+        else:
+            self.zUnifChBox.setChecked(False)
+            self.zUnifChBox.setEnabled(True)
+
+    # This function enables or disables setting of stretching parameter
+    # depending on whether grid is uniform or not
+    def uniformCheck(self):
+        if self.xUnifChBox.isChecked() == True:
+            self.xBetaLEdit.setEnabled(False)
+        else:
+            self.xBetaLEdit.setEnabled(True)
+
+        if self.yUnifChBox.isChecked() == True:
+            self.yBetaLEdit.setEnabled(False)
+        else:
+            self.yBetaLEdit.setEnabled(True)
+
+        if self.zUnifChBox.isChecked() == True:
+            self.zBetaLEdit.setEnabled(False)
+        else:
+            self.zBetaLEdit.setEnabled(True)
 
     # This function enables or disables the LineEdit used to enter the tangent-hyperbolic
     # grid stretching parameter, beta.
